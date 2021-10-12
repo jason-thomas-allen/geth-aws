@@ -1,0 +1,65 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ethereum
+spec:
+  storageClassName: standard
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Gi
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: ethereum
+  labels:
+    run: ethereum
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: ethereum
+  template:
+    metadata:
+      labels:
+        run: ethereum
+    spec:
+      containers:
+        - name: ethereum
+          image: ethereum/client-go:stable
+          args: ['--http', '--http.addr=0.0.0.0', '--ropsten']
+          imagePullPolicy: Always
+          ports:
+            - name: json-rpc
+              containerPort: 8545
+              protocol: TCP
+            - name: default
+              containerPort: 30303
+              protocol: TCP
+          volumeMounts:
+            - name: ethereum
+              mountPath: /root
+      volumes:
+        - name: ethereum
+          persistentVolumeClaim:
+            claimName: ethereum
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    run: ethereum
+  name: ethereum
+spec:
+  externalTrafficPolicy: Cluster
+  ports:
+    - port: 8545
+      protocol: TCP
+      targetPort: 8545
+  selector:
+    run: ethereum
+  sessionAffinity: None
+  type: LoadBalancer

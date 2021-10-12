@@ -1,0 +1,26 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: ethereum
+  labels:
+    run: ethereum
+spec:
+  containers:
+    - name: ethereum
+      image: ethereum/client-go:stable
+      args: ['--http', '--http.addr=0.0.0.0', '--ropsten']
+      imagePullPolicy: Always
+      ports:
+        - name: json-rpc
+          containerPort: 8545
+          protocol: TCP
+        - name: default
+          containerPort: 30303
+          protocol: TCP
+      volumeMounts:
+        - name: ethereum
+          mountPath: /root/.ethereum
+  volumes:
+    - name: ethereum
+      persistentVolumeClaim:
+        claimName: ethereum
