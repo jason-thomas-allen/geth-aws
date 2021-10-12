@@ -21,7 +21,7 @@ env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
   GKE_CLUSTER: kiada
   GKE_ZONE: asia-southeast1-a
-  DEPLOYMENT_NAME: gke-test
+  DEPLOYMENT_NAME: ethereum
 
 jobs:
   setup-and-deploy:
