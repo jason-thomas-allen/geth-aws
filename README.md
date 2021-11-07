@@ -93,11 +93,42 @@ $ gcloud compute disks list
 $ gcloud compute disks delete DISK-NAME
 ```
 
-gcloud projects add-iam-policy-binding $GKE_PROJECT \
+Setting up API user and GitHub secrets
+
+https://docs.github.com/en/actions/deployment/deploying-to-your-cloud-provider/deploying-to-google-kubernetes-engine
+
+Create a new service account
+
+```
+$ export SA_NAME=user-id
+$ gcloud iam service-accounts create $SA_NAME
+```
+
+Retrieve email address of new account
+
+```
+$ gcloud iam service-accounts list
+```
+
+Add roles
+
+```
+$ export GKE_PROJECT=project-id
+$ gcloud projects add-iam-policy-binding $GKE_PROJECT \
   --member=serviceAccount:$SA_EMAIL \
- --role=roles/container.admin \
- --role=roles/storage.admin \
- --role=roles/container.clusterViewer \
- --role=roles/container.persistentVolumeClaims.get \
- --role=roles/container.deployments.get \
- --role=roles/container.services.get
+  --role=roles/container.admin \
+  --role=roles/storage.admin \
+  --role=roles/container.clusterViewer
+```
+
+Download JSON key file -- do not commit this to repo!!
+
+```
+$ gcloud iam service-accounts keys create key.json --iam-account=$SA_EMAIL
+```
+
+Store the service account key as a secret named GKE_SA_KEY
+
+```
+$ export GKE_SA_KEY=$(cat key.json | base64)
+```
