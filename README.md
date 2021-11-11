@@ -101,7 +101,7 @@ Create a new service account
 
 ```
 $ export SA_NAME=user-id
-$ gcloud iam service-accounts create $SA_NAME
+$ gcloud iam service-accounts create $SA_NAME --display-name $SA_NAME
 ```
 
 Retrieve email address of new account
@@ -110,15 +110,15 @@ Retrieve email address of new account
 $ gcloud iam service-accounts list
 ```
 
-Add roles
+In the console create new role from Kubernetes Engine Developer and assign it to this service account.
+How to do this from CLI?
+
+Add custom role to SA
 
 ```
-$ export GKE_PROJECT=project-id
 $ gcloud projects add-iam-policy-binding $GKE_PROJECT \
   --member=serviceAccount:$SA_EMAIL \
-  --role=roles/container.admin \
-  --role=roles/storage.admin \
-  --role=roles/container.clusterViewer
+  --role=projects/civic-karma-326401/roles/CustomKubernetesEngineDevelope
 ```
 
 Download JSON key file -- do not commit this to repo!!
